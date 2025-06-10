@@ -35,7 +35,7 @@ describe('useArtworkFilters hook', () => {
     const { result } = renderFilterHook();
 
     act(() => {
-      result.current.handleSearch({ referenceNumber: '1926.1934' });
+      result.current.handleSearch({ searchTerm: '1926.1934' });
     });
 
     expect(result.current.filteredArtworks.length).toBe(1);
@@ -46,7 +46,7 @@ describe('useArtworkFilters hook', () => {
     const { result } = renderFilterHook();
 
     act(() => {
-      result.current.handleSearch({ title: 'the' });
+      result.current.handleSearch({ searchTerm: 'the' });
     });
 
     expect(result.current.filteredArtworks.length).toBe(7);
@@ -136,5 +136,26 @@ describe('useArtworkFilters hook', () => {
 
     expect(result.current.filteredArtworks.length).toBe(0);
     expect(result.current.anyAppliedFilterActive).toBe(false);
+  });
+
+  // New test for combined search
+  it('should filter by combined search with partial title and exact reference', () => {
+    const { result } = renderFilterHook();
+
+    // Test partial title match
+    act(() => {
+      result.current.handleSearch({ searchTerm: 'interior' });
+    });
+
+    expect(result.current.filteredArtworks.length).toBe(1);
+    expect(result.current.filteredArtworks[0].id).toBe(2);
+
+    // Test exact reference match
+    act(() => {
+      result.current.handleSearch({ searchTerm: '1887.232' });
+    });
+
+    expect(result.current.filteredArtworks.length).toBe(1);
+    expect(result.current.filteredArtworks[0].id).toBe(2);
   });
 });

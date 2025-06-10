@@ -17,17 +17,20 @@ const useArtworkFilters = (artworks, loading, error) => {
       return [];
     }
 
-    const { referenceNumber, title, artist, place, startDate, endDate } = appliedFilters;
+    const { searchTerm, artist, place, startDate, endDate } = appliedFilters;
     return artworks.filter(artwork => {
-
-      const referenceMatch = !referenceNumber || artwork.main_reference_number?.trim().toLowerCase() === referenceNumber.trim().toLowerCase();
-      const titleMatch = !title || artwork.title?.toLowerCase().includes(title.trim().toLowerCase());
+      let searchMatch = true;
+      if (searchTerm) {
+        const referenceMatch = artwork.main_reference_number?.trim().toLowerCase() === searchTerm.trim().toLowerCase();
+        const titleMatch = artwork.title?.toLowerCase().includes(searchTerm.trim().toLowerCase());
+        searchMatch = referenceMatch || titleMatch;
+      }
       const artistMatch = !artist || artwork.artist_title?.toLowerCase().includes(artist.trim().toLowerCase());
       const placeMatch = !place || artwork.place_of_origin?.toLowerCase().includes(place.trim().toLowerCase());
       const startDateMatch = !startDate || (artwork.date_start && artwork.date_start >= parseInt(startDate, 10));
       const endDateMatch = !endDate || (artwork.date_start && artwork.date_start <= parseInt(endDate, 10));
       
-      return referenceMatch && titleMatch && artistMatch && placeMatch && startDateMatch && endDateMatch;
+      return searchMatch && artistMatch && placeMatch && startDateMatch && endDateMatch;
     });
   }, [artworks, appliedFilters, loading, error]);
 
